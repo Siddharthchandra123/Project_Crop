@@ -110,7 +110,7 @@ def get_weather(city):
 
     temperature = data["current"]["temp_c"]
     humidity = data["current"]["humidity"]
-
+    
     return temperature, humidity
 
 # -------- LOAD FERTILIZER MODEL --------

@@ -32,6 +32,12 @@ function previewImage(event) {
     reader.readAsDataURL(file);
 }
 function predictFertilizer() {
+    if (!window.selectedLat || !window.selectedLon) {
+        document.getElementById("fertilizerResult").innerText =
+            "⚠️ Please select a location on the map";
+        return;
+    }
+
     fetch("http://127.0.0.1:5000/predict-fertilizer", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -39,25 +45,47 @@ function predictFertilizer() {
             nitrogen: nitrogen.value,
             phosphorus: phosphorus.value,
             potassium: potassium.value,
-            city: city.value
+            lat: window.selectedLat,
+            lon: window.selectedLon
         })
     })
     .then(res => res.json())
     .then(data => {
-        if (data.error) {
-            document.getElementById("fertilizerResult").innerText =
-                "❌ " + data.error;
-            return;
-        }
-
         document.getElementById("fertilizerResult").innerHTML =
-            `🌱 <b>Recommended Fertilizer:</b> ${data.fertilizer}<br>
+            `🌱 <b>Recommended:</b> ${data.fertilizer}<br>
              🌡️ Temp: ${data.weather.temperature} °C<br>
              💧 Humidity: ${data.weather.humidity}%`;
     })
-    .catch(err => {
+    .catch(() => {
         document.getElementById("fertilizerResult").innerText =
-            "❌ Unable to fetch prediction";
+            "❌ Prediction failed";
     });
 }
 
+
+let map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+let marker;
+
+// OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// Click on map to select location
+map.on('click', function (e) {
+    const { lat, lng } = e.latlng;
+
+    if (marker) {
+        marker.setLatLng([lat, lng]);
+    } else {
+        marker = L.marker([lat, lng]).addTo(map);
+    }
+
+    marker.bindPopup(
+        `📍 Selected Location<br>Lat: ${lat.toFixed(4)}<br>Lon: ${lng.toFixed(4)}`
+    ).openPopup();
+
+    // Save coordinates globally
+    window.selectedLat = lat;
+    window.selectedLon = lng;
+});

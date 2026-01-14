@@ -155,3 +155,10 @@ footer {
     font-size: 18px;
     margin-top: 15px;
 }
+#map {
+    height: 300px;
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+}
