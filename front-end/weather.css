@@ -1,0 +1,153 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #1f2355, #2b2e4a);
+  color: white;
+}
+
+.app {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+.top-bar {
+  display: flex;
+  gap: 10px;
+}
+
+.top-bar input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  background: #2f3264;
+  color: white;
+}
+
+.current-card {
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 25px;
+  margin-top: 20px;
+}
+
+.temp {
+  font-size: 72px;
+  font-weight: bold;
+}
+
+.condition {
+  font-size: 22px;
+  opacity: 0.9;
+}
+
+.feels {
+  opacity: 0.7;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.metrics div {
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 15px;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.tabs button {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.tabs .active {
+  background: #f1c40f;
+  color: black;
+}
+
+.forecast {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.day {
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 15px;
+  text-align: center;
+  width: 120px;
+}
+
+.alert {
+  margin-top: 25px;
+  padding: 15px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  color: black;
+  font-weight: bold;
+}
+#button {
+    padding: 12px 30px;
+    margin: 5px;
+    border: none;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #724caf, #642e7d);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#button:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #a366bb, #84388e);
+}
+/* ---------- NAVIGATION BAR ---------- */
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+nav a {
+    text-decoration: none;
+    padding: 10px 22px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+/* Hover effect */
+nav a:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+/* Active page */
+nav a.active {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #000;
+    font-weight: 600;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}

@@ -130,18 +130,24 @@ def get_weather_by_coords(lat, lon):
     )
 
     response = requests.get(url)
-    print("WeatherAPI status:", response.status_code)
-    print("WeatherAPI response:", response.text)
-
     if response.status_code != 200:
-        raise Exception(response.json().get("error", {}).get("message", "Weather API error"))
+        raise Exception(response.json().get("error", {}).get("message"))
 
     data = response.json()
 
-    temperature = data["current"]["temp_c"]
-    humidity = data["current"]["humidity"]
-    
-    return temperature, humidity
+    weather = {
+        "temp_c": data["current"]["temp_c"],
+        "humidity": data["current"]["humidity"],
+        "wind_kph": data["current"]["wind_kph"],
+        "gust_kph": data["current"]["gust_kph"],
+        "precip_mm": data["current"]["precip_mm"],
+        "condition": data["current"]["condition"]["text"]
+    }
+
+    alerts = analyze_weather_alerts(weather)
+
+    return weather, alerts
+
 # -------- LOAD FERTILIZER MODEL --------
 with open(r"C:\Users\Lenovo\Downloads\Project_Crop\back-end\fertilizer.pkl", "rb") as f:
     fertilizer_model = pickle.load(f)
@@ -157,26 +163,45 @@ def predict_fertilizer():
         lat = float(data["lat"])
         lon = float(data["lon"])
 
-        temperature, humidity = get_weather_by_coords(lat, lon)
+        weather, alerts = get_weather_by_coords(lat, lon)
 
-        # 🧪 optional pH (default)
+        temperature = weather["temp_c"]
+        humidity = weather["humidity"]
+        rainfall = weather["precip_mm"]
         ph = float(data.get("ph", 6.5))
-        rainfall = float(data.get("rainfall", 100))
 
         features = np.array([[N, P, K, temperature, humidity, ph, rainfall]])
-
         prediction = fertilizer_model.predict(features)[0]
 
         return jsonify({
             "fertilizer": prediction,
             "weather": {
                 "temperature": temperature,
-                "humidity": humidity
-            }
+                "humidity": humidity,
+                "rainfall": rainfall
+            },
+            "alerts": alerts
         })
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+def analyze_weather_alerts(weather):
+    alerts = []
+
+    if weather["wind_kph"] > 35:
+        alerts.append("⚠️ High wind alert: Avoid spraying fertilizers or pesticides.")
+
+    if "thunder" in weather["condition"].lower():
+        alerts.append("⛈️ Thunderstorm alert: Field work not recommended.")
+
+    if weather["precip_mm"] > 10:
+        alerts.append("🌧️ Heavy rain alert: Risk of fertilizer runoff.")
+
+    if weather["temp_c"] > 38:
+        alerts.append("🌡️ Heat stress alert: Irrigation recommended.")
+
+    return alerts
 
 # -------- RUN SERVER --------
 if __name__ == "__main__":

@@ -15,12 +15,6 @@ function predictDisease() {
     .catch(err => {
         alert("API Error");
     });
-    if (data.prediction === "Image cannot be recognized") {
-    result.innerHTML = "❌ Image cannot be recognized. Please upload a clear leaf image.";
-} else {
-    result.innerHTML = `🌿 Disease: ${data.prediction}<br>Confidence: ${data.confidence * 100}%`;
-}
-    
 }
 function previewImage(event) {
     const preview = document.getElementById("imagePreview");
@@ -69,45 +63,54 @@ function predictFertilizer() {
 }
 
 
-// Prevent redeclaration
-if (!window._agroMapInitialized) {
+let map = L.map('map').setView([20.5937, 78.9629], 5); // India center
+let marker;
 
-    window._agroMapInitialized = true;
+// OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
 
-    var map = L.map('map').setView([20.5937, 78.9629], 5);
-    var marker;
+// Click on map to select location
+map.on('click', async function (e) {
+    const { lat, lng } = e.latlng;
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    if (marker) {
+        marker.setLatLng([lat, lng]);
+    } else {
+        marker = L.marker([lat, lng]).addTo(map);
+    }
 
-    map.on('click', function (e) {
-        const lat = e.latlng.lat;
-        const lon = e.latlng.lng;
+    marker.bindPopup(
+        `📍 Selected Location<br>Lat: ${lat.toFixed(4)}<br>Lon: ${lng.toFixed(4)}`
+    ).openPopup();
 
-        if (marker) {
-            marker.setLatLng([lat, lon]);
-        } else {
-            marker = L.marker([lat, lon]).addTo(map);
-        }
+    // Save coordinates globally
+    window.selectedLat = lat;
+    window.selectedLon = lng;
 
-        window.selectedLat = lat;
-        window.selectedLon = lon;
+    // 🔥 Convert coords → city
+    const cityName = await getCityFromCoords(lat, lng);
 
-        fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-        )
-        .then(res => res.json())
-        .then(data => {
-            const address = data.address || {};
-            const city =
-                address.city ||
-                address.town ||
-                address.village ||
-                address.state ||
-                "";
+    if (cityName) {
+        document.getElementById("city").value = cityName;
+    }
+});
 
-            document.getElementById("city").value = city;
-        });
-    });
+async function getCityFromCoords(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (data.address) {
+        return (
+            data.address.city ||
+            data.address.town ||
+            data.address.village ||
+            data.address.county ||
+            ""
+        );
+    }
+    return "";
 }

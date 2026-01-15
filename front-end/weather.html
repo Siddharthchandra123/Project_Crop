@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AgroAI | Live Weather & Farmer Alerts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="weather.css">
+</head>
+
+<body>
+<div class="app">
+
+  <header class="top-bar">
+    <input type="text" id="city" placeholder="Search for location">
+    <button onclick="getWeather()">🔍</button>
+  </header>
+  <nav>
+    <a href="index.html" id="button">Disease</a>
+    <a href="fertilizer.html" id="button">Crop Recommend</a>
+    <a href="weather.html" id="button" class="active">Weather</a>
+  </nav>
+  <section class="current-card" id="weatherCard">
+  <div class="left">
+    <div class="temp">
+      <span id="temp">--</span>°C
+    </div>
+    <div class="condition" id="condition">--</div>
+    <div class="feels" id="feels">Feels like --°</div>
+    <div id="locationTitle"></div>
+  </div>
+  <div class="right" id="icon">🌙</div>
+</section>
+
+<section class="metrics">
+  <div>💨 Wind<br><span id="wind">-- km/h</span></div>
+  <div>💧 Humidity<br><span id="humidity">--%</span></div>
+  <div>🌫 Visibility<br><span id="visibility">-- km</span></div>
+  <div>🌡 Pressure<br><span id="pressure">-- mb</span></div>
+</section>
+
+
+  <section class="tabs">
+    <button class="active">Overview</button>
+    <button>Wind</button>
+    <button>Humidity</button>
+    <button>Air Quality</button>
+  </section>
+
+  <section class="forecast">
+    <div class="day">
+      <div>Today</div>
+      <div>🌤</div>
+      <div>16° / 6°</div>
+    </div>
+    <div class="day">
+      <div>Thu</div>
+      <div>🌤</div>
+      <div>17° / 7°</div>
+    </div>
+    <div class="day">
+      <div>Fri</div>
+      <div>🌤</div>
+      <div>19° / 7°</div>
+    </div>
+  </section>
+
+  <section class="alert" id="alertBox">
+    ✅ Weather conditions are suitable for farming.
+  </section>
+
+</div>
+
+<footer>
+    © 2026 AgroAI | Smart Farming Intelligence
+</footer>
+
+<script>
+const API_KEY = "dde2b9fb075e41d4b8082159261401";
+
+async function getWeather() {
+    const city = document.getElementById("city").value.trim();
+    if (!city) return showError("Please enter a city name");
+
+    showLoading();
+
+    try {
+        const data = await fetchWeather(city);
+        updateUI(data);
+        updateBackground(data.current);
+        updateAlert(data.current);
+    } catch (err) {
+        console.error(err);
+        showError("Unable to fetch weather data");
+    }
+}
+
+async function fetchWeather(city) {
+    const res = await fetch(
+        `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}&aqi=no`
+    );
+    if (!res.ok) throw new Error("API error");
+    return res.json();
+}
+
+function updateUI(data) {
+    document.getElementById("weatherCard").style.display = "flex";
+
+    document.getElementById("locationTitle").innerText =
+        `📍 ${data.location.name}, ${data.location.country}`;
+
+    document.getElementById("temp").innerText = data.current.temp_c;
+    document.getElementById("condition").innerText = data.current.condition.text;
+    document.getElementById("feels").innerText =
+        `Feels like ${data.current.feelslike_c}°C`;
+
+    document.getElementById("wind").innerText =
+        data.current.wind_kph + " km/h";
+    document.getElementById("humidity").innerText =
+        data.current.humidity + "%";
+    document.getElementById("visibility").innerText =
+        data.current.vis_km + " km";
+    document.getElementById("pressure").innerText =
+        data.current.pressure_mb + " mb";
+
+    document.getElementById("icon").innerHTML =
+        `<img src="https:${data.current.condition.icon}" width="90">`;
+}
+
+function updateAlert(current) {
+    let msg = "✅ Weather conditions are suitable for farming.";
+
+    if (current.temp_c > 35) {
+        msg = "🔥 Heat Alert: Irrigate crops early morning or evening.";
+    } else if (current.precip_mm > 5) {
+        msg = "🌧️ Rain Alert: Avoid fertilizer spraying today.";
+    } else if (current.humidity > 80) {
+        msg = "⚠️ High Humidity: Risk of fungal diseases.";
+    }
+
+    document.getElementById("alertBox").innerText = msg;
+}
+
+function updateBackground(current) {
+    if (current.temp_c > 35) {
+        document.body.style.background =
+            "linear-gradient(180deg,#ff512f,#dd2476)";
+    } else if (current.precip_mm > 5) {
+        document.body.style.background =
+            "linear-gradient(180deg,#1e3c72,#2a5298)";
+    } else {
+        document.body.style.background =
+            "linear-gradient(180deg,#1f2355,#2b2e4a)";
+    }
+}
+
+function showLoading() {
+    document.getElementById("alertBox").innerText =
+        "⏳ Fetching live weather...";
+}
+
+function showError(msg) {
+    document.getElementById("alertBox").innerText = "❌ " + msg;
+}
+</script>
+</body>
+</html>
