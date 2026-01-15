@@ -1,9 +1,12 @@
-body {
+body {  
+  padding-bottom: 500px; /* prevents overlap with chatbot */
   margin: 0;
   font-family: "Segoe UI", sans-serif;
   background: linear-gradient(180deg, #1f2355, #2b2e4a);
   color: white;
 }
+
+
 
 .app {
   max-width: 1000px;
@@ -152,13 +155,21 @@ nav a.active {
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 .bubble-bot {
-  max-height: 420px;
-  overflow-y: auto;
+  position: fixed;              /* 🔒 stays fixed */
+  bottom: 20px;                 /* distance from bottom */
+  right: 20px;                  /* distance from right */
   width: 360px;
+  max-height: 420px;
+  overflow-y: auto;             /* internal scroll */
   background: #ffffff;
   border-radius: 20px;
   padding: 15px;
   box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+  z-index: 9999;                /* stays on top */
+}
+#chatContent {
+  max-height: 280px;
+  overflow-y: auto;
 }
 
 .bot-header {
@@ -322,4 +333,65 @@ nav a.active {
   border-radius: 14px;
   align-self: flex-end;
   font-size: 14px;
+}
+/* 🤖 Floating AI Button */
+/* 🤖 Floating AI Button */
+#aiBotBtn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #7a2ecc, #5227ae);
+  color: white;
+  font-size: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  z-index: 9999;
+}
+
+/* Chatbot popup */
+#aiBot {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* Animation only when visible */
+#aiBot:not(.hidden) {
+  animation: popUp 0.3s ease;
+}
+
+/* Close button */
+.close-bot {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.close-bot:hover {
+  opacity: 1;
+}
+
+/* Pop animation */
+@keyframes popUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.hidden {
+  display: none !important;
 }

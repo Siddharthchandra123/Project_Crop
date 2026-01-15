@@ -1,3 +1,179 @@
+const API_KEY = "dde2b9fb075e41d4b8082159261401";
+
+async function getWeather() {
+    const city = document.getElementById("city").value.trim();
+    if (!city) return showError("Please enter a city name");
+
+    showLoading();
+
+    try {
+        const data = await fetchWeather(city);
+        updateUI(data);
+        updateBackground(data.current);
+        updateWeatherAlerts(data);;
+    } catch (err) {
+        console.error(err);
+        showError("Unable to fetch weather data");
+    }
+}
+function detectCurrentLocationWeather() {
+    if (!navigator.geolocation) {
+        showError("Geolocation not supported by browser");
+        return;
+    }
+
+    showLoading();
+
+    navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+            const lat = pos.coords.latitude;
+            const lon = pos.coords.longitude;
+
+            try {
+                const res = await fetch(
+                    `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${lat},${lon}&days=1&alerts=yes`
+                );
+                const data = await res.json();
+
+                updateUI(data);
+                updateBackground(data.current);
+                updateWeatherAlerts(data);
+
+                // Update search box with detected city
+                document.getElementById("city").value =
+                    data.location.name;
+
+            } catch (err) {
+                showError("Unable to fetch location weather");
+            }
+        },
+        () => showError("Location permission denied")
+    );
+}
+
+async function fetchWeather(city) {
+    const res = await fetch(
+        `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=1&alerts=yes`
+    );
+    if (!res.ok) throw new Error("API error");
+    return res.json();
+}
+
+
+function updateUI(data) {
+    document.getElementById("weatherCard").style.display = "flex";
+
+    document.getElementById("locationTitle").innerText =
+        `📍 ${data.location.name}, ${data.location.country}`;
+
+    document.getElementById("temp").innerText = data.current.temp_c;
+    document.getElementById("condition").innerText = data.current.condition.text;
+    document.getElementById("feels").innerText =
+        `Feels like ${data.current.feelslike_c}°C`;
+
+    document.getElementById("wind").innerText =
+        data.current.wind_kph + " km/h";
+    document.getElementById("humidity").innerText =
+        data.current.humidity + "%";
+    document.getElementById("visibility").innerText =
+        data.current.vis_km + " km";
+    document.getElementById("pressure").innerText =
+        data.current.pressure_mb + " mb";
+
+    document.getElementById("icon").innerHTML =
+        `<img src="https:${data.current.condition.icon}" width="90">`;
+}
+
+function updateAlert(current) {
+    const alertBox = document.getElementById("alertBox");
+    const alerts = generateFarmerAlerts(current);
+
+    alertBox.innerHTML = alerts.map(a => `• ${a}`).join("<br>");
+
+    alertBox.style.background =
+        "linear-gradient(135deg, #ffb347, #ffcc33)";
+    alertBox.style.color = "#000";
+}
+
+function generateFarmerAlerts(current) {
+    let alerts = [];
+
+    // 🌡️ Heat stress
+    if (current.temp_c >= 35) {
+        alerts.push("🔥 Heat Stress Alert: Irrigate crops early morning or evening.");
+    }
+
+    // ❄️ Cold stress
+    if (current.temp_c <= 5) {
+        alerts.push("❄️ Cold Alert: Protect crops using mulch or cover.");
+    }
+
+    // 🌧️ Rainfall
+    if (current.precip_mm >= 5) {
+        alerts.push("🌧️ Rain Alert: Avoid pesticide & fertilizer spraying.");
+    }
+
+    // 💧 High humidity → disease risk
+    if (current.humidity >= 80) {
+        alerts.push("🦠 Disease Risk Alert: High chance of fungal infection.");
+    }
+
+    // 🌬️ High wind
+    if (current.wind_kph >= 30) {
+        alerts.push("🌪️ Wind Alert: Secure crops & farm structures.");
+    }
+
+    // ✅ If no alerts
+    if (alerts.length === 0) {
+        alerts.push("✅ Weather is suitable for farming activities today.");
+    }
+
+    return alerts;
+}
+
+function updateWeatherAlerts(data) {
+    const alertBox = document.getElementById("alertBox");
+
+    // 🔴 Official weather alerts (govt / API)
+    if (data.alerts && data.alerts.alert.length > 0) {
+        const alert = data.alerts.alert[0];
+
+        alertBox.innerHTML = `
+            ⚠️ <b>${alert.event}</b><br>
+            🕒 ${alert.effective}<br>
+            📢 ${alert.desc}<br>`;
+
+        alertBox.style.background =
+            "linear-gradient(135deg, #ff512f, #f09819)";
+        alertBox.style.color = "black";
+        return;
+    }
+
+    // 🟢 Fallback → Farmer smart alerts
+    updateAlert(data.current);
+}
+
+function updateBackground(current) {
+    if (current.temp_c > 35) {
+        document.body.style.background =
+            "linear-gradient(180deg,#ff512f,#dd2476)";
+    } else if (current.precip_mm > 5) {
+        document.body.style.background =
+            "linear-gradient(180deg,#1e3c72,#2a5298)";
+    } else {
+        document.body.style.background =
+            "linear-gradient(180deg,#1f2355,#2b2e4a)";
+    }
+}
+
+function showLoading() {
+    document.getElementById("alertBox").innerText =
+        "⏳ Fetching live weather...";
+}
+
+function showError(msg) {
+    document.getElementById("alertBox").innerText = "❌ " + msg;
+}
 function predictDisease() {
     const image = document.getElementById("cropImage").files[0];
     let formData = new FormData();
@@ -459,7 +635,7 @@ function resetChat() {
   );
 
   document.getElementById("backBtn").style.display = "none";
-}
+};
 function toggleBot() {
   const bot = document.getElementById("aiBot");
   const btn = document.getElementById("aiBotBtn");
@@ -474,3 +650,6 @@ function toggleBot() {
     btn.style.display = "flex"; // show button again
   }
 }
+
+
+window.onload = detectCurrentLocationWeather;

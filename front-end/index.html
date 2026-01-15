@@ -18,6 +18,8 @@
 <div class="overlay">
 
 <header>
+    <h1>🌾 AgroAI</h1>
+    <p>Crop disease prediction system</p>
     <p>AI Powered Crop Disease & Crop Prediction</p>
 </header>
 
@@ -25,6 +27,7 @@
     <a href="index.html" id="button">Disease</a>
     <a href="fertilizer.html" id="button" class="active">Crop Recommend</a>
     <a href="weather.html" id="button">Weather</a>
+    <a href="mandi.html" id="button">Mandi Prices</a>
 </nav>
 <!-- Crop Disease Prediction -->
 <section id="disease" class="card">
@@ -50,11 +53,15 @@
     <button onclick="predictFertilizer()">Recommend</button>
     <p id="Crop_Result"></p>
 </section>
-<div class="bubble-bot">
+<div id="aiBotBtn" onclick="toggleBot()">🤖</div>
+
+<!-- 🤖 Chatbot Popup -->
+<div class="bubble-bot hidden" id="aiBot">
 
   <div class="bot-header">
-    🤖 AgroAI Bubble Bot
+    🤖 AgroAI Assistant
     <span>Tap a bubble to continue</span>
+    <span class="close-bot" onclick="toggleBot()">✖</span>
   </div>
 
   <div id="chatContent">

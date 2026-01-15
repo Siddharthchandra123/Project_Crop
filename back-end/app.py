@@ -202,6 +202,47 @@ def analyze_weather_alerts(weather):
         alerts.append("🌡️ Heat stress alert: Irrigation recommended.")
 
     return alerts
+# -------- MANDI PRICES ENDPOINT --------
+
+Mandi_API_KEY = "579b464db66ec23bdd000001b9ba6983c18e4a91786d500232dd472d"
+RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070"
+
+@app.route("/api/mandi-prices")
+def mandi_prices():
+    state = request.args.get("state", "")
+    commodity = request.args.get("commodity", "")
+
+    url = "https://api.data.gov.in/resource/" + RESOURCE_ID
+
+    params = {
+        "api-key": Mandi_API_KEY,
+        "format": "json",
+        "limit": 50,
+    }
+
+    if state:
+        params["filters[state.keyword]"] = state
+    if commodity:
+        params["filters[commodity.keyword]"] = commodity
+
+    r = requests.get(url, params=params)
+    raw = r.json()
+
+    markets = []
+    for rec in raw.get("records", []):
+        markets.append({
+            "state": rec.get("state"),
+            "mandi": rec.get("market"),
+            "commodity": rec.get("commodity"),
+            "price": int(rec.get("modal_price", 0)),
+            "avg7d": int(rec.get("modal_price", 0)),  # can compute later
+            "trend": []  # optional (historical fetch)
+        })
+
+    return jsonify({
+        "lastUpdated": raw.get("updated_date"),
+        "markets": markets
+    })
 
 # -------- RUN SERVER --------
 if __name__ == "__main__":
