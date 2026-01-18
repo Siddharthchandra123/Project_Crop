@@ -1,4 +1,4 @@
-🌱 AgroAI – Smart Farming Intelligence Platform
+<h1><b>🌱 AgroAI – Smart Farming Intelligence Platform</b></h1>
 
 AgroAI is an AI-powered smart farming platform designed to help farmers make data-driven agricultural decisions. It integrates machine learning, real-time data, and interactive dashboards to improve crop productivity, reduce losses, and support sustainable farming.
 
@@ -70,32 +70,6 @@ Weather API
 Mandi Price (Government Open Data)
 
 Soil Data (SoilGrids API)
-
-📂 Project Structure
-AgroAI/
-│
-├── frontend/
-│   ├── index.html
-│   ├── login.html
-│   ├── dashboard.html
-│   ├── css/
-│   └── js/
-│
-├── backend/
-│   ├── app.py
-│   ├── model.py
-│   ├── routes/
-│   └── utils/
-│
-├── ml_model/
-│   ├── trained_model.pth
-│   └── dataset/
-│
-├── database/
-│   └── schema.sql
-│
-├── README.md
-└── requirements.txt
 
 ⚙️ Installation & Setup
 1️⃣ Clone the Repository
