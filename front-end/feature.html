@@ -15,7 +15,7 @@
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: #f4fbf7;
+      background: #72907f;
       color: #222;
     }
 
@@ -49,7 +49,6 @@
       justify-content: center;
       flex-direction: column;
       text-align: center;
-      background: linear-gradient(135deg, #2e7d32, #0f3d25);
       color: white;
       padding: 40px;
     }
@@ -138,34 +137,91 @@
       cursor: pointer;
       margin-top: 20px;
     }
+    /* ===== FEATURE HERO VIDEO ===== */
+.feature-hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  overflow: hidden;
+}
+
+.feature-hero video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.feature-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    rgba(0,0,0,0.6),
+    rgba(0,0,0,0.35),
+    rgba(0,0,0,0.7)
+  );
+  z-index: -1;
+}
+
+.feature-hero h1 {
+  font-size: 4rem;
+  font-weight: 800;
+}
+
+.feature-hero p {
+  max-width: 720px;
+  font-size: 1.3rem;
+  margin-top: 10px;
+}
+
   </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
-<nav class="navbar">
-  <div class="logo">🌾 Agro AI</div>
-  <div>
-    <a href="frontpage.html">Home</a>
-    <a href="feature.html">Features</a>
-    <a href="#">Demo</a>
-    <a href="login.html">Login</a>
+<nav class="navbar" style="background-color:rgb(0, 130, 0);">
+  <div class="logo" style="font-size: 30px;">🌾 Agro AI</div>
+  <div style="color:#e9f6ef">
+    <a href="frontpage.html" style="color: #e8f5e9;font-size: 30px;">Home</a>
+    <a href="feature.html" style="color: #e8f5e9;font-size: 30px;">Features</a>
+    <a href="#" style="color: #e8f5e9;font-size: 30px;">Demo</a>
+    <a href="login.html" style="color: #e8f5e9;font-size: 30px;">Login</a>
   </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <h1 data-aos="zoom-in">Agro AI Technology</h1>
-  <p data-aos="fade-up">
-    A complete AI-powered ecosystem transforming agriculture from soil to sale.
-  </p>
+<section class="feature-hero">
+  
+  <!-- 🎥 Background Video -->
+  <video autoplay muted loop playsinline>
+    <source src="agro.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- 🌾 Hero Content -->
+  <div>
+    <h1 data-aos="zoom-in">Agro AI Technology</h1>
+    <p data-aos="fade-up">
+      A complete AI-powered ecosystem transforming agriculture from soil to sale.
+    </p>
+  </div>
+
 </section>
+
 
 <!-- PIPELINE -->
 <section class="pipeline">
-  <h2 data-aos="fade-right">How Agro AI Works</h2>
+  <h2 data-aos="fade-right" style="font-size: 50px; font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;">How Agro AI Works</h2>
 
-  <div class="pipeline-step" data-aos="fade-right">
+  <div class="pipeline-step" data-aos="fade-right" style="background-color: #e9f6ef; border-radius: 12px; padding: 20px;">
     <span>🌱</span>
     <div>
       <h3>Data Collection</h3>
@@ -173,7 +229,7 @@
     </div>
   </div>
 
-  <div class="pipeline-step" data-aos="fade-left">
+  <div class="pipeline-step" data-aos="fade-left" style="background-color: #e9f6ef; border-radius: 12px; padding: 20px;">
     <span>🧠</span>
     <div>
       <h3>AI Intelligence</h3>
@@ -181,7 +237,7 @@
     </div>
   </div>
 
-  <div class="pipeline-step" data-aos="fade-right">
+  <div class="pipeline-step" data-aos="fade-right" style="background-color: #e9f6ef; border-radius: 12px; padding: 20px;">
     <span>📊</span>
     <div>
       <h3>Analytics Engine</h3>
@@ -189,7 +245,7 @@
     </div>
   </div>
 
-  <div class="pipeline-step" data-aos="fade-left">
+  <div class="pipeline-step" data-aos="fade-left" style="background-color: #e9f6ef; border-radius: 12px; padding: 20px;">
     <span>📱</span>
     <div>
       <h3>Farmer Dashboard</h3>

@@ -13,6 +13,14 @@
     ],
     "no-inline-styles": "off",
     "button-type": "off",
-    "axe/parsing": "off"
+    "axe/parsing": "off",
+    "compat-api/html": [
+      "default",
+      {
+        "ignore": [
+          "video[playsinline]"
+        ]
+      }
+    ]
   }
 }
