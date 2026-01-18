@@ -5,18 +5,17 @@ import torch
 from authlib.integrations.flask_client import OAuth
 from torchvision import transforms
 from PIL import Image
-import model
 from model import ResNet9   # ← YOUR MODEL
-import os
+import os, pickle, torch
 app = Flask(__name__)
 CORS(app)
+print("RUNNING THIS FILE:", __file__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 MODEL_PATH = os.path.join(BASE_DIR, "models", "plant_disease_model.pth")
 FERT_PATH  = os.path.join(BASE_DIR, "models", "fertilizer.pkl")
 device = torch.device("cpu")
-model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
 
 with open(FERT_PATH, "rb") as f:
     fertilizer_model = pickle.load(f)
@@ -65,13 +64,10 @@ CLASS_NAMES = [
     'Tomato___Tomato_Yellow_Leaf_Curl_Virus'
 ]
 
-
-# -------- LOAD MODEL --------
-device = torch.device("cpu")
-
-model = ResNet9(in_channels=3, num_diseases=NUM_CLASSES)
-model.load_state_dict(torch.load(r"C:\Users\Lenovo\Downloads\Project_Crop\back-end\plant_disease_model.pth", map_location=device))
-model.eval()
+# ---- LOAD CNN MODEL ----
+net = ResNet9(in_channels=3, num_diseases=NUM_CLASSES)
+net.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+net.eval()
 
 # -------- IMAGE TRANSFORM --------
 transform = transforms.Compose([
@@ -87,10 +83,10 @@ def predict_disease():
             return jsonify({"error": "No image uploaded"}), 400
 
         image = Image.open(request.files["image"]).convert("RGB")
-        image = transform(image).unsqueeze(0)
+        image = transform(image).unsqueeze(0).to(device)
 
         with torch.no_grad():
-            outputs = model(image)
+            outputs = net(image)
             probs = torch.softmax(outputs, dim=1)
             confidence, pred_index = torch.max(probs, dim=1)
 
@@ -161,9 +157,6 @@ def get_weather_by_coords(lat, lon):
 
     return weather, alerts
 
-# -------- LOAD FERTILIZER MODEL --------
-with open(r"C:\Users\Lenovo\Downloads\Project_Crop\back-end\fertilizer.pkl", "rb") as f:
-    fertilizer_model = pickle.load(f)
 
 @app.route("/predict-fertilizer", methods=["POST"])
 def predict_fertilizer():

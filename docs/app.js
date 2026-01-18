@@ -10,7 +10,7 @@ async function getRecommendations() {
     resultsDiv.innerHTML = "<p>Loading...</p>";
 
     try {
-        const res = await fetch(`http://127.0.0.1:5000/api/recommend/${landId}`);
+        const res = await fetch(`http://127.0.0.1:10000/api/recommend/${landId}`);
         const data = await res.json();
 
         if (data.length === 0) {

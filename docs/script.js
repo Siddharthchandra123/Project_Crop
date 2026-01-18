@@ -3,7 +3,7 @@ function predictDisease() {
     let formData = new FormData();
     formData.append("image", image);
 
-    fetch("http://127.0.0.1:5000/predict-disease", {
+    fetch("http://127.0.0.1:10000/predict-disease", {
         method: "POST",
         body: formData
     })
@@ -38,7 +38,7 @@ function predictFertilizer() {
         return;
     }
 
-    fetch("http://127.0.0.1:5000/predict-fertilizer", {
+    fetch("http://127.0.0.1:10000/predict-fertilizer", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({
@@ -259,7 +259,7 @@ setTimeout(() => {
   const formData = new FormData();
   formData.append("image", file);
 
-  const res = await fetch("http://127.0.0.1:5000/predict-disease", {
+  const res = await fetch("http://127.0.0.1:10000/predict-disease", {
     method: "POST",
     body: formData
   });
@@ -281,7 +281,7 @@ setTimeout(() => {
 async function sendFertilizer(N, P, K, lat, lon) {
   addBotMessage("🌾 Calculating best fertilizer...");
 
-  const res = await fetch("http://127.0.0.1:5000/predict-fertilizer", {
+  const res = await fetch("http://127.0.0.1:10000/predict-fertilizer", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

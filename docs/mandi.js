@@ -30,7 +30,7 @@ async function fetchFromAPI() {
         : "";
 
     const response = await fetch(
-      `http://127.0.0.1:5000/api/mandi-prices?state=${state}&commodity=${commodity}`
+      `http://127.0.0.1:10000/api/mandi-prices?state=${state}&commodity=${commodity}`
     );
 
     if (!response.ok) {
