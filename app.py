@@ -5,11 +5,21 @@ import torch
 from authlib.integrations.flask_client import OAuth
 from torchvision import transforms
 from PIL import Image
-
+import model
 from model import ResNet9   # ← YOUR MODEL
-
+import os
 app = Flask(__name__)
 CORS(app)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MODEL_PATH = os.path.join(BASE_DIR, "models", "plant_disease_model.pth")
+FERT_PATH  = os.path.join(BASE_DIR, "models", "fertilizer.pkl")
+device = torch.device("cpu")
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device))
+
+with open(FERT_PATH, "rb") as f:
+    fertilizer_model = pickle.load(f)
 
 # -------- CONFIG --------
 IMAGE_SIZE = 256
@@ -104,7 +114,8 @@ def predict_disease():
 import requests
 import numpy as np
 import pickle
-WEATHER_API_KEY = "dde2b9fb075e41d4b8082159261401"
+WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
+Mandi_API_KEY = os.getenv("MANDI_API_KEY")
 def get_weather(city):
     url = (
         f"https://api.weatherapi.com/v1/current.json"
@@ -206,7 +217,6 @@ def analyze_weather_alerts(weather):
     return alerts
 # -------- MANDI PRICES ENDPOINT --------
 
-Mandi_API_KEY = "579b464db66ec23bdd000001b9ba6983c18e4a91786d500232dd472d"
 RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070"
 
 @app.route("/api/mandi-prices")
@@ -247,52 +257,7 @@ def mandi_prices():
     })
 
 
-oauth = OAuth(app)
-
-# GOOGLE
-google = oauth.register(
-    name='google',
-    client_id='GOOGLE_CLIENT_ID',
-    client_secret='GOOGLE_CLIENT_SECRET',
-    access_token_url='https://oauth2.googleapis.com/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    api_base_url='https://www.googleapis.com/oauth2/v1/',
-    client_kwargs={'scope': 'email profile'}
-)
-
-# MICROSOFT
-microsoft = oauth.register(
-    name='microsoft',
-    client_id='MICROSOFT_CLIENT_ID',
-    client_secret='MICROSOFT_CLIENT_SECRET',
-    access_token_url='https://login.microsoftonline.com/common/oauth2/v2.0/token',
-    authorize_url='https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
-    api_base_url='https://graph.microsoft.com/v1.0/',
-    client_kwargs={'scope': 'User.Read'}
-)
-@app.route('/login/google')
-def login_google():
-    redirect_uri = url_for('google_auth', _external=True)
-    return google.authorize_redirect(redirect_uri)
-
-@app.route('/auth/google')
-def google_auth():
-    token = google.authorize_access_token()
-    user = google.get('userinfo').json()
-    print(user)  # email, name, picture
-    return redirect("http://localhost:3000/dashboard")
-@app.route('/login/microsoft')
-def login_microsoft():
-    redirect_uri = url_for('microsoft_auth', _external=True)
-    return microsoft.authorize_redirect(redirect_uri)
-
-@app.route('/auth/microsoft')
-def microsoft_auth():
-    token = microsoft.authorize_access_token()
-    user = microsoft.get('me').json()
-    print(user)
-    return redirect("http://localhost:3000/dashboard")
-
 # -------- RUN SERVER --------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
