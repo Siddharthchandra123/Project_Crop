@@ -4,11 +4,11 @@ AgroAI is an AI-powered smart farming platform designed to help farmers make dat
 
 🚀 Features
 
-🌾 Crop Disease Detection
+<h2>🌾 Crop Disease Detection</h2>
 
 Upload leaf images and detect crop diseases using deep learning (CNN).
 
-🌦️ Weather Alerts & Farmer Notifications
+<h2>🌦️ Weather Alerts & Farmer Notifications<h2>
 
 Real-time weather alerts for rainfall, heatwaves, frost, and storms.
 
